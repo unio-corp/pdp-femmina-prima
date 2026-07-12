@@ -1,7 +1,7 @@
 {
-  "name": "pdp-bottega-veneta",
+  "name": "pdp-femmina-prima",
   "version": "1.0.0",
-  "description": "PDP (Product Detail Page) - Bottega Veneta Design System",
+  "description": "PDP (Product Detail Page) - Femmina Prime",
   "type": "module",
   "scripts": {
     "dev": "live-server src",
