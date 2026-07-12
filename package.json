@@ -1,0 +1,18 @@
+{
+  "name": "pdp-bottega-veneta",
+  "version": "1.0.0",
+  "description": "PDP (Product Detail Page) - Bottega Veneta Design System",
+  "type": "module",
+  "scripts": {
+    "dev": "live-server src",
+    "build": "echo 'Build not configured yet'",
+    "preview": "live-server dist"
+  },
+  "keywords": ["pdp", "design-system", "bottega-veneta"],
+  "author": "femminaprime@gmail.com",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0"
+  }
+}
