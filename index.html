@@ -1,41 +1,865 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PDP - Bottega Veneta</title>
-  <link rel="stylesheet" href="src/styles/tokens.css">
-  <link rel="stylesheet" href="src/styles/global.css">
-  <link rel="stylesheet" href="src/components/hero/css/hero.css">
-  <link rel="stylesheet" href="src/components/product-details/css/product-details.css">
-  <link rel="stylesheet" href="src/components/gallery/css/gallery.css">
-  <link rel="stylesheet" href="src/components/ui/buttons.css">
-  <link rel="stylesheet" href="src/components/ui/card.css">
+<meta charset="utf-8">
+<title>Giacca in mohair e lana — Double black · Bottega Veneta</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --fg: #000;
+    --bg: #fff;
+    --muted: #6d7882;
+    --muted-bg: #f5f5f5;
+    --border: #e0e0e0;
+    --header-h: 62px;
+    --sticky-bar-h: 64px;
+  }
+  html, body {
+    font-family: Times, "Times New Roman", serif;
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--fg);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; color: inherit; }
+  ul { list-style: none; }
+  svg { display: block; }
+
+  /* ============== NAV HEADER ============== */
+  .nav-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    background: transparent;
+    box-shadow: none;
+    transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.3s ease;
+    will-change: transform;
+  }
+  .nav-header.scrolled {
+    background: #fff;
+    box-shadow: 0 1px 0 var(--border);
+  }
+  .nav-header.hidden {
+    transform: translateY(-100%);
+  }
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 0 20px;
+    height: var(--header-h);
+    width: 100%;
+    position: relative;
+  }
+  .nav-logo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .nav-logo {
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
+    white-space: nowrap;
+  }
+  .nav-list {
+    display: flex;
+    gap: 24px;
+    overflow: hidden;
+  }
+  .nav-list a {
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+
+  /* ============== PRODUCT GALLERY (5 IMG · horizontal scroll) ============== */
+  .product-gallery-wrap {
+    position: relative;
+    width: 100%;
+  }
+  .product-gallery {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    height: 110vh;
+    list-style: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: var(--gallery-snap, x mandatory);
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .product-gallery::-webkit-scrollbar { display: none; }
+  .product-gallery li {
+    flex: 0 0 var(--gallery-item-w, 50%);
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    scroll-snap-align: start;
+  }
+  /* Arrow buttons */
+  .gallery-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    transition: opacity 0.2s, transform 0.2s ease;
+    color: #000;
+  }
+  .gallery-arrow:hover { opacity: 0.55; }
+  .gallery-arrow.prev { left: 20px; }
+  .gallery-arrow.next { right: 20px; }
+  .gallery-arrow.prev:hover { transform: translateY(-50%) translateX(-2px); }
+  .gallery-arrow.next:hover { transform: translateY(-50%) translateX(2px); }
+  .gallery-arrow[hidden] { display: none; }
+  .ph {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: hidden;
+  }
+  .ph img,
+  .product-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .img-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .img-desc {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    max-width: 240px;
+  }
+
+  /* ============== PRODUCT INFO ============== */
+  .product-info-section {
+    display: flex;
+    justify-content: center;
+    padding: 0 16px;
+  }
+  .product-info {
+    max-width: 460px;
+    width: 100%;
+    padding: 40px 0 24px;
+  }
+  .product-info .tag { font-size: 14px; display: block; }
+  .product-info .product-name { font-size: 14px; font-weight: 400; }
+  .product-info .price { font-size: 14px; margin-top: 4px; }
+  .product-info .color { font-size: 14px; margin-top: 24px; margin-bottom: 16px; }
+  .size-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    border-bottom: 1px solid #000;
+    background: transparent;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .size-guide {
+    font-size: 14px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    display: inline-block;
+    margin-top: 8px;
+  }
+  .cta-primary {
+    display: block;
+    width: 100%;
+    height: 48px;
+    margin-top: 24px;
+    background: #000;
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .cta-secondary {
+    display: block;
+    width: 100%;
+    height: 48px;
+    margin-top: 12px;
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .shipping-note { font-size: 14px; color: var(--muted); margin-top: 20px; }
+  .description { font-size: 14px; line-height: 22px; margin-top: 32px; }
+  .accordion { margin-top: 16px; }
+  .accordion-item { border-bottom: 1px solid var(--border); }
+  .accordion-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    font-size: 14px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  /* ============== ADDITIONAL IMAGES ============== */
+  .sgpp-grid {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .sgpp-grid .item {
+    width: 50%;
+    aspect-ratio: 1 / 1;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+  .sgpp-grid .item .product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .sgpp-grid .item.full {
+    width: 100%;
+    max-width: 1920px;
+    aspect-ratio: auto;
+    height: 140vh;
+  }
+  @media (max-width: 768px) {
+    .sgpp-grid .item {
+      width: 100%;
+    }
+    .sgpp-grid .item.full {
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  /* ============== COMPLETE LOOK / CTA DUO ============== */
+  .duo-row {
+    display: flex;
+    width: 100%;
+    max-width: 332px;
+    height: 166px;
+    position: sticky;
+    float: right;
+    right: 40px;
+    bottom: 40px;
+    margin-left: auto;
+    z-index: 400;
+  }
+  .duo-card {
+    width: 50%;
+    aspect-ratio: 1 / 1;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 1px solid #000;
+    overflow: clip;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 12px;
+    line-height: 16.8px;
+  }
+  .duo-card.light { background: #fff; color: #000; }
+  .duo-card.dark  { background: #000; color: #fff; }
+  .duo-card .duo-label { font-size: 12px; line-height: 16.8px; }
+  .duo-card .duo-price { font-size: 12px; line-height: 16.8px; }
+
+  @media (max-width: 768px) {
+    .duo-row {
+      position: sticky;
+      float: none;
+      left: 0;
+      right: auto;
+      bottom: 0;
+      width: 100%;
+      max-width: 100%;
+      height: 25vw;
+      margin-left: 0;
+    }
+    .duo-card {
+      width: auto;
+      height: 25vw;
+      aspect-ratio: auto;
+    }
+    .duo-card.light {
+      flex: 0 0 auto;
+      width: 75vw;
+    }
+    .duo-card.dark {
+      flex: 0 0 auto;
+      width: 25vw;
+      max-width: 25vw;
+      height: 25vw;
+      max-height: 25vw;
+      align-items: flex-start;
+      text-align: left;
+      justify-content: flex-start;
+    }
+  }
+
+  /* ============== RECENTLY VIEWED ============== */
+  .recently-viewed {
+    padding: 56px 32px 32px;
+  }
+  .tabs-list {
+    display: flex;
+    gap: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .tab {
+    font-size: 14px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--muted);
+  }
+  .tab.active {
+    color: #000;
+    text-decoration: underline;
+    text-underline-offset: 10px;
+  }
+  .rv-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .rv-card { cursor: pointer; }
+  .rv-img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+  }
+  .rv-name { font-size: 14px; margin-top: 12px; }
+  .rv-price { font-size: 14px; color: var(--muted); }
+
+  /* ============== FOOTER ============== */
+  .breadcrumbs {
+    padding: 24px 16px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    font-size: 14px;
+  }
+  .breadcrumbs .sep { color: var(--muted); }
+  .site-footer {
+    padding: 40px 16px 60px;
+    border-top: 1px solid var(--border);
+  }
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding-bottom: 40px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .footer-top h3,
+  .links-grid h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 400;
+    margin-bottom: 16px;
+  }
+  .newsletter-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #000;
+    padding-bottom: 4px;
+    margin-top: 16px;
+  }
+  .newsletter-form input {
+    flex: 1;
+    font-size: 14px;
+    font-family: inherit;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--muted);
+  }
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .links-grid li a {
+    font-size: 14px;
+    line-height: 28px;
+    display: block;
+  }
+  .country {
+    text-align: center;
+    padding-top: 40px;
+    margin-top: 40px;
+    border-top: 1px solid var(--border);
+    font-size: 14px;
+    line-height: 28px;
+  }
+  .country a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* ============== STICKY BAR ============== */
+  body { padding-bottom: var(--sticky-bar-h); }
+  .sticky-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: var(--sticky-bar-h);
+    padding: 0 16px;
+    background: #fff;
+    border-top: 1px solid var(--border);
+  }
+  .sticky-bar .sb-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    text-transform: uppercase;
+  }
+  .sticky-bar .sb-price {
+    flex-shrink: 0;
+    font-size: 14px;
+    margin: 0 32px;
+    white-space: nowrap;
+  }
+  .sticky-bar .sb-cta {
+    flex-shrink: 0;
+    height: 40px;
+    padding: 0 24px;
+    background: #000;
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  /* Responsive: collapse some nav items on narrower screens */
+  @media (max-width: 1100px) {
+    .nav-list { gap: 16px; }
+    .nav-list a { font-size: 13px; }
+  }
+  /* Mobile: gallery shows 1 image at a time */
+  @media (max-width: 768px) {
+    .product-gallery li { flex-basis: 100% !important; }
+  }
+
+  /* Mobile: hamburger nav */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 22px;
+    height: 17px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  .nav-hamburger span {
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+  }
+  @media (max-width: 768px) {
+    nav > .nav-list { display: none; }
+    .nav-hamburger { display: flex; }
+    nav.open .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: #fff;
+      padding: 16px 24px;
+      border-top: 1px solid #000;
+    }
+  }
+</style>
+<link id="gfont-Noto-Sans" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&amp;display=swap">
 </head>
 <body>
-  <noscript>
-    <p style="padding: 2rem; text-align: center; font-size: 1.125rem;">
-      Questa pagina richiede JavaScript abilitato. Abilita JavaScript nel tuo browser per continuare.
-    </p>
-  </noscript>
+
+  <!-- ============== NAV HEADER ============== -->
+  <header class="nav-header" data-screen-label="NavHeader">
+    <div class="nav-bar">
+      <a class="nav-logo" href="#">FEMMINA PRIME</a>
+      <nav id="mainNav">
+        <button class="nav-hamburger" aria-label="Menu" aria-expanded="false" onclick="document.getElementById('mainNav').classList.toggle('open')"><span></span><span></span></button>
+        <ul class="nav-list">
+          <li><a href="#">Articoli</a></li>
+          <li><a href="#">Attività</a></li>
+          <li><a href="#">Scopri</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-label="Cerca"><circle cx="11" cy="11" r="6.5"/><line x1="16" y1="16" x2="20.5" y2="20.5"/></svg>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-label="Account"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-label="Carrello"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+      </div>
+    </div>
+  </header>
 
   <main>
-    <!-- Hero Section -->
-    <section class="hero" id="hero">
-      <!-- Content loaded from src/components/hero/ -->
+
+    <!-- ============== HGPP · Combo Hero Gallery Product Page (PGPP + SGPP) ============== -->
+    <section data-screen-label="HGPP">
+      <div class="product-gallery-wrap" data-screen-label="Try on">
+        <ul class="product-gallery" id="productGallery">
+          <li><div class="ph"><img src="uploads/01-mode.webp" alt="Giacca in mohair e lana — vista frontale"></div></li>
+          <li><div class="ph"><img src="uploads/02-model.webp" alt="Giacca in mohair e lana — vista laterale"></div></li>
+          <li><div class="ph"><img src="uploads/03-model.webp" alt="Giacca in mohair e lana — vista posteriore"></div></li>
+          <li><div class="ph"><img src="uploads/04-model.webp" alt="Giacca in mohair e lana — dettaglio revers Intrecciato"></div></li>
+        </ul>
+        <button class="gallery-arrow prev" id="galleryPrev" aria-label="Immagine precedente">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="14,5 7,12 14,19"/></svg>
+        </button>
+        <button class="gallery-arrow next" id="galleryNext" aria-label="Immagine successiva">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="10,5 17,12 10,19"/></svg>
+        </button>
+      </div>
+
+      <div class="sgpp-grid" data-screen-label="Engagement">
+        <div class="item"><img class="product-img" src="./people-mrhqxxtk.jpg" alt="Giacca — dettaglio posteriore"></div>
+        <div class="item"><img class="product-img" src="./imgi_1137_newminimalsportsbragsblackb6c4-mrhqyafp.jpg" alt="Giacca — dettaglio laterale"></div>
+        <div class="item full" style="height: 100%"><img class="product-img" src="./people-10--mrhr38du.jpg" alt="Giacca — dettaglio tessuto"></div>
+      </div>
     </section>
 
-    <!-- Product Details -->
-    <section class="product-details" id="product-details">
-      <!-- Content loaded from src/components/product-details/ -->
+    <!-- ============== PRODUCT INFO ============== -->
+    <section class="product-info-section" data-screen-label="ProductInfo">
+      <div class="product-info" style="font-family: &quot;Noto Sans&quot;">
+        <span class="tag">Novità</span>
+        <h2 class="product-name">Giacca in mohair e lana</h2>
+        <p class="price">4200 €</p>
+        <p class="color">Colore: Double black</p>
+        <button class="size-btn">
+          <span>Seleziona la taglia</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6,9 12,15 18,9"/></svg>
+        </button>
+        <a href="#" class="size-guide">Tabella taglie</a>
+        <button class="cta-primary">Pre-ordina</button>
+        <button class="cta-secondary">Scopri il look</button>
+        <p class="shipping-note">Data di spedizione stimata a partire dal 18 settembre</p>
+        <p class="description">Giacca in tela di lana e morbido mohair, con revers in seta motivo Intrecciato.</p>
+        <div class="accordion">
+          <div class="accordion-item"><button class="accordion-trigger"><span>Dettagli prodotto</span><span>＋</span></button></div>
+          <div class="accordion-item"><button class="accordion-trigger"><span>Spedizione e resi</span><span>＋</span></button></div>
+          <div class="accordion-item"><button class="accordion-trigger"><span>Confezione regalo</span><span>＋</span></button></div>
+          <div class="accordion-item"><button class="accordion-trigger"><span>Scopri in negozio</span><span>＋</span></button></div>
+        </div>
+      </div>
     </section>
 
-    <!-- Gallery -->
-    <section class="gallery" id="gallery">
-      <!-- Content loaded from src/components/gallery/ -->
+
+    <!-- ============== COMPLETE LOOK / CTA DUO ============== -->
+    <section class="duo-row" data-screen-label="DuoCTA">
+      <div class="duo-card light" style="border-width: 1px; border-style: none; border-color: #FFFFFF">
+        <div class="duo-label">Completa il look</div>
+      </div>
+      <div class="duo-card dark" style="border-width: 1px; border-style: none; border-color: #000000">
+        <div class="duo-label">Aggiungi al Carrello</div>
+        <div class="duo-price">3.600€</div>
+      </div>
     </section>
+
+    <!-- ============== RECENTLY VIEWED ============== -->
+    <section class="recently-viewed" data-screen-label="RecentlyViewed">
+      <div class="tabs-list">
+        <button class="tab active">Visti di recente</button>
+        <button class="tab">Potrebbe piacerti anche…</button>
+      </div>
+      <div class="rv-grid">
+        <div class="rv-card">
+          <div class="rv-img" style="background:#f0ede8"></div>
+          <p class="rv-name">Gonna in pelle</p>
+          <p class="rv-price">2500 €</p>
+        </div>
+        <div class="rv-card">
+          <div class="rv-img" style="background:#e8e5e0"></div>
+          <p class="rv-name">Pantaloni in mohair</p>
+          <p class="rv-price">1200 €</p>
+        </div>
+        <div class="rv-card">
+          <div class="rv-img" style="background:#ebe8e3"></div>
+          <p class="rv-name">Camicia in seta</p>
+          <p class="rv-price">980 €</p>
+        </div>
+        <div class="rv-card">
+          <div class="rv-img" style="background:#e3e0db"></div>
+          <p class="rv-name">Cintura Intrecciato</p>
+          <p class="rv-price">650 €</p>
+        </div>
+      </div>
+    </section>
+
   </main>
 
-  <script type="module" src="src/scripts/main.js"></script>
+  <!-- ============== FOOTER ============== -->
+  <nav class="breadcrumbs" data-screen-label="Breadcrumbs">
+    <a href="#">Home</a><span class="sep">&gt;</span>
+    <a href="#">Uomo</a><span class="sep">&gt;</span>
+    <span>Abbigliamento</span>
+  </nav>
+  <footer class="site-footer" data-screen-label="SiteFooter">
+    <div style="height:350px;width:100%;position:relative;">
+      <span style="position:absolute;bottom:16px;left:16px;font-size:12px;">FEMMINA PRIME</span>
+    </div>
+    <div class="country">
+      <p>Spedire in: <a href="#">Italia</a></p>
+      <p>Lingua: <a href="#">Italiano</a></p>
+    </div>
+  </footer>
+
+  <!-- ============== STICKY BAR ============== -->
+  <div class="sticky-bar" data-screen-label="StickyBar" id="stickyBar" style="font-family: &quot;Noto Sans&quot;">
+    <span class="sb-name">Giacca in mohair e lana</span>
+    <span class="sb-price">4200 €</span>
+    <button class="sb-cta">Pre-ordina</button>
+  </div>
+
+  <!-- ============== GALLERY SCROLL LOGIC ============== -->
+  <script>
+    // NavHeader: transparent at top, white on scroll, hide on scroll-down / show on scroll-up
+    (function() {
+      const nav = document.querySelector('.nav-header');
+      if (!nav) return;
+      let lastY = window.scrollY;
+      let ticking = false;
+      function update() {
+        const y = window.scrollY;
+        nav.classList.toggle('scrolled', y > 12);
+        const delta = y - lastY;
+        if (y > 80 && delta > 4) {
+          nav.classList.add('hidden');
+        } else if (delta < -4 || y <= 80) {
+          nav.classList.remove('hidden');
+        }
+        lastY = y;
+        ticking = false;
+      }
+      window.addEventListener('scroll', () => {
+        if (!ticking) { requestAnimationFrame(update); ticking = true; }
+      }, { passive: true });
+      update();
+    })();
+  </script>
+
+  <!-- ============== GALLERY SCROLL LOGIC ============== -->
+  <script>
+    (function() {
+      const gallery = document.getElementById('productGallery');
+      const prev = document.getElementById('galleryPrev');
+      const next = document.getElementById('galleryNext');
+      if (!gallery) return;
+
+      const items = () => Array.from(gallery.querySelectorAll('li'));
+
+      function updateActive() {
+        const scrollLeft = gallery.scrollLeft;
+        const maxScroll = gallery.scrollWidth - gallery.clientWidth;
+        prev.style.visibility = scrollLeft <= 4 ? 'hidden' : 'visible';
+        next.style.visibility = scrollLeft >= maxScroll - 4 ? 'hidden' : 'visible';
+      }
+
+      function step(dir) {
+        const all = items();
+        if (!all.length) return;
+        const scrollLeft = gallery.scrollLeft;
+        let idx = 0;
+        all.forEach((li, i) => {
+          if (li.offsetLeft <= scrollLeft + 4) idx = i;
+        });
+        const target = Math.max(0, Math.min(all.length - 1, idx + dir));
+        all[target].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+      }
+      prev.addEventListener('click', () => step(-1));
+      next.addEventListener('click', () => step(1));
+      gallery.addEventListener('scroll', updateActive, { passive: true });
+      window.addEventListener('resize', updateActive);
+      updateActive();
+    })();
+  </script>
+
+  <!-- ============== TWEAKS PANEL (React) ============== -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+
+  <div id="tweaks-root"></div>
+
+  <script type="text/babel">
+    const { useEffect } = React;
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "itemsPerView": "2",
+      "scrollSnap": true,
+      "showArrows": false,
+      "ctaColor": "#000000",
+      "bodyFont": "Helvetica",
+      "showNavHeader": true,
+      "showPGPP": true,
+      "showProductInfo": true,
+      "showSGPP": true,
+      "showDuoCTA": true,
+      "showStickyBar": false,
+      "showRecentlyViewed": false,
+      "showBreadcrumbs": true,
+      "showSiteFooter": true
+    }/*EDITMODE-END*/;
+
+    function TweaksApp() {
+      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+      useEffect(() => {
+        const root = document.documentElement;
+        // Gallery layout
+        const itemW = { '1': '100%', '2': '50%', '3': '33.3333%' }[t.itemsPerView] || '50%';
+        root.style.setProperty('--gallery-item-w', itemW);
+        root.style.setProperty('--gallery-snap', t.scrollSnap ? 'x mandatory' : 'none');
+
+        // Show/hide gallery controls
+        const prev = document.getElementById('galleryPrev');
+        const next = document.getElementById('galleryNext');
+        if (prev) prev.hidden = !t.showArrows;
+        if (next) next.hidden = !t.showArrows;
+
+        // Primary CTA color (Pre-ordina + sticky bar CTA + size-btn underline)
+        document.querySelectorAll('.cta-primary, .sb-cta').forEach(el => {
+          el.style.background = t.ctaColor;
+        });
+
+        // Body font (preserves inline overrides on .product-info & .sticky-bar)
+        document.body.style.fontFamily =
+          t.bodyFont === 'Times' ? 'Times, "Times New Roman", serif'
+          : t.bodyFont === 'Noto Sans' ? '"Noto Sans", system-ui, sans-serif'
+          : 'Helvetica, Arial, sans-serif';
+
+        // Section toggles
+        const sb = document.getElementById('stickyBar');
+        if (sb) sb.style.display = t.showStickyBar ? '' : 'none';
+        document.body.style.paddingBottom = t.showStickyBar ? '64px' : '0';
+
+        const rv = document.querySelector('.recently-viewed');
+        if (rv) rv.style.display = t.showRecentlyViewed ? '' : 'none';
+
+        const bc = document.querySelector('.breadcrumbs');
+        if (bc) bc.style.display = t.showBreadcrumbs ? '' : 'none';
+
+        const nh = document.querySelector('.nav-header');
+        if (nh) nh.style.display = t.showNavHeader ? '' : 'none';
+
+        const pgpp = document.querySelector('[data-screen-label="Try on"]');
+        if (pgpp) pgpp.style.display = t.showPGPP ? '' : 'none';
+
+        const pi = document.querySelector('[data-screen-label="ProductInfo"]');
+        if (pi) pi.style.display = t.showProductInfo ? '' : 'none';
+
+        const sgpp = document.querySelector('[data-screen-label="Engagement"]');
+        if (sgpp) sgpp.style.display = t.showSGPP ? '' : 'none';
+
+        const duo = document.querySelector('[data-screen-label="DuoCTA"]');
+        if (duo) duo.style.display = t.showDuoCTA ? '' : 'none';
+
+        const footer = document.querySelector('[data-screen-label="SiteFooter"]');
+        if (footer) footer.style.display = t.showSiteFooter ? '' : 'none';
+      }, [t]);
+
+      return (
+        <TweaksPanel>
+          <TweakSection label="Gallery" />
+          <TweakRadio  label="Per view" value={t.itemsPerView}
+                       options={['1', '2', '3']}
+                       onChange={(v) => setTweak('itemsPerView', v)} />
+          <TweakToggle label="Scroll snap" value={t.scrollSnap}
+                       onChange={(v) => setTweak('scrollSnap', v)} />
+          <TweakToggle label="Frecce" value={t.showArrows}
+                       onChange={(v) => setTweak('showArrows', v)} />
+
+          <TweakSection label="Style" />
+          <TweakColor  label="Accento CTA" value={t.ctaColor}
+                       options={['#000000', '#3d2914', '#8B5A2B', '#1F3A2E']}
+                       onChange={(v) => setTweak('ctaColor', v)} />
+          <TweakRadio  label="Font" value={t.bodyFont}
+                       options={['Times', 'Noto Sans', 'Helvetica']}
+                       onChange={(v) => setTweak('bodyFont', v)} />
+
+          <TweakSection label="Componenti" />
+          <TweakToggle label="Nav header" value={t.showNavHeader}
+                       onChange={(v) => setTweak('showNavHeader', v)} />
+          <TweakToggle label="Try on (PGPP)" value={t.showPGPP}
+                       onChange={(v) => setTweak('showPGPP', v)} />
+          <TweakToggle label="Product info" value={t.showProductInfo}
+                       onChange={(v) => setTweak('showProductInfo', v)} />
+          <TweakToggle label="Engagement (SGPP)" value={t.showSGPP}
+                       onChange={(v) => setTweak('showSGPP', v)} />
+          <TweakToggle label="Duo CTA" value={t.showDuoCTA}
+                       onChange={(v) => setTweak('showDuoCTA', v)} />
+          <TweakToggle label="Sticky bar" value={t.showStickyBar}
+                       onChange={(v) => setTweak('showStickyBar', v)} />
+          <TweakToggle label="Visti di recente" value={t.showRecentlyViewed}
+                       onChange={(v) => setTweak('showRecentlyViewed', v)} />
+          <TweakToggle label="Breadcrumbs" value={t.showBreadcrumbs}
+                       onChange={(v) => setTweak('showBreadcrumbs', v)} />
+          <TweakToggle label="Site footer" value={t.showSiteFooter}
+                       onChange={(v) => setTweak('showSiteFooter', v)} />
+        </TweaksPanel>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<TweaksApp />);
+  </script>
+
 </body>
 </html>

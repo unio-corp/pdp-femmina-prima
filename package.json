@@ -4,7 +4,7 @@
   "description": "PDP (Product Detail Page) - Femmina Prime",
   "type": "module",
   "scripts": {
-    "dev": "live-server src",
+    "dev": "live-server .",
     "build": "echo 'Build not configured yet'",
     "preview": "live-server dist"
   },
