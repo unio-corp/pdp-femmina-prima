@@ -1,0 +1,94 @@
+.section {
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+.container {
+  max-width: 460px;
+  width: 100%;
+  padding: 40px 0 24px;
+}
+
+.tag {
+  font-size: 14px;
+  display: block;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 400;
+  margin-top: 8px;
+}
+
+.price {
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.color {
+  font-size: 14px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.sizeBtn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 12px 0;
+  border: none;
+  border-bottom: 1px solid #000;
+  background: transparent;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  transition: opacity 0.2s;
+}
+
+.sizeBtn:hover {
+  opacity: 0.75;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sizeBtn {
+    border-bottom-color: #fff;
+  }
+}
+
+.sizeGuide {
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  display: inline-block;
+  margin-top: 8px;
+  transition: opacity 0.2s;
+}
+
+.sizeGuide:hover {
+  opacity: 0.75;
+}
+
+.shippingNote {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 20px;
+}
+
+.description {
+  font-size: 14px;
+  line-height: 22px;
+  margin-top: 32px;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 0 12px;
+  }
+
+  .container {
+    padding: 30px 0 20px;
+  }
+}

@@ -1,0 +1,35 @@
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.item {
+  width: 50%;
+  aspect-ratio: 1 / 1;
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.img {
+  object-fit: cover;
+}
+
+.item.full {
+  width: 100%;
+  max-width: 1920px;
+  aspect-ratio: auto;
+  height: 140vh;
+}
+
+@media (max-width: 768px) {
+  .item {
+    width: 100%;
+  }
+
+  .item.full {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+}

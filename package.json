@@ -4,15 +4,36 @@
   "description": "PDP (Product Detail Page) - Femmina Prime",
   "type": "module",
   "scripts": {
-    "dev": "live-server .",
-    "build": "echo 'Build not configured yet'",
-    "preview": "live-server dist"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "test:e2e": "playwright test"
   },
-  "keywords": ["pdp", "design-system", "bottega-veneta"],
+  "keywords": [
+    "pdp",
+    "design-system",
+    "bottega-veneta"
+  ],
   "author": "femminaprime@gmail.com",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^20.19.43",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^9.0.0",
     "prettier": "^3.0.0",
-    "eslint": "^8.0.0"
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "next": "^15.5.20",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }

@@ -1,0 +1,107 @@
+.navHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: transparent;
+  box-shadow: none;
+  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.3s ease;
+  will-change: transform;
+}
+
+.navHeader.scrolled {
+  background: #fff;
+  box-shadow: 0 1px 0 var(--border);
+}
+
+@media (prefers-color-scheme: dark) {
+  .navHeader.scrolled {
+    background: #1a1a1a;
+    box-shadow: 0 1px 0 var(--border);
+  }
+}
+
+.navHeader.hidden {
+  transform: translateY(-100%);
+}
+
+.navBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 0 20px;
+  height: var(--header-h);
+  width: 100%;
+}
+
+.navLogo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12.5px;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.navList {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+}
+
+.navList a {
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.navList a:hover {
+  opacity: 0.6;
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.navActions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: opacity 0.2s;
+}
+
+.navActions button:hover {
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .navBar {
+    flex-direction: row;
+    gap: 16px;
+    padding: 0 12px;
+  }
+
+  .navList {
+    gap: 12px;
+    font-size: 12px;
+    order: 3;
+    width: 100%;
+  }
+
+  .navLogo {
+    font-size: 11px;
+    order: 2;
+  }
+
+  .navActions {
+    gap: 12px;
+    order: 1;
+  }
+}

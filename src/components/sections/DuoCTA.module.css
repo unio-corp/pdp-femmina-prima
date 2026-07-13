@@ -1,0 +1,84 @@
+.duoRow {
+  display: flex;
+  width: 100%;
+  max-width: 332px;
+  height: 166px;
+  position: sticky;
+  float: right;
+  right: 40px;
+  bottom: 40px;
+  margin-left: auto;
+  z-index: 400;
+}
+
+.card {
+  width: 50%;
+  aspect-ratio: 1 / 1;
+  padding: 12px;
+  box-sizing: border-box;
+  border: 1px solid #000;
+  overflow: clip;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 12px;
+  line-height: 16.8px;
+}
+
+.light {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .light {
+    background: #1a1a1a;
+    color: #fff;
+    border-color: #1a1a1a;
+  }
+}
+
+.dark {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dark {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+  }
+}
+
+.label {
+  font-weight: 500;
+  margin-bottom: auto;
+}
+
+.price {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .duoRow {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    position: static;
+    float: none;
+    right: auto;
+    bottom: auto;
+    margin-left: 0;
+    padding: 20px;
+    flex-direction: column;
+  }
+
+  .card {
+    width: 100%;
+  }
+}

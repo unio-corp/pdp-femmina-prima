@@ -1,0 +1,66 @@
+.btn {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s, color 0.2s, opacity 0.2s;
+}
+
+.btn:hover {
+  opacity: 0.85;
+}
+
+.primary {
+  width: 100%;
+  height: 48px;
+  background: #000;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@media (prefers-color-scheme: dark) {
+  .primary {
+    background: #fff;
+    color: #000;
+  }
+}
+
+.secondary {
+  width: 100%;
+  height: 48px;
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@media (prefers-color-scheme: dark) {
+  .secondary {
+    background: #1a1a1a;
+    color: #fff;
+    border-color: #fff;
+  }
+}
+
+.ghost {
+  background: none;
+  color: inherit;
+  border: none;
+  font-size: 14px;
+}
+
+.sm {
+  height: 32px;
+  font-size: 12px;
+}
+
+.md {
+  height: 40px;
+  font-size: 14px;
+}
+
+.lg {
+  height: 48px;
+  font-size: 16px;
+}

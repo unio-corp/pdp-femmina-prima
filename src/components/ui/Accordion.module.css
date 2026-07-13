@@ -1,0 +1,40 @@
+.accordion {
+  margin-top: 16px;
+}
+
+.item {
+  border-bottom: 1px solid var(--border);
+}
+
+.trigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  font-size: 14px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+  transition: opacity 0.2s;
+}
+
+.trigger:hover {
+  opacity: 0.75;
+}
+
+.content {
+  padding: 0 0 16px 0;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--muted);
+}
+
+.iconOpen {
+  transform: rotate(180deg);
+  display: inline-block;
+  transition: transform 0.2s;
+}

@@ -1,0 +1,67 @@
+.toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #000;
+  color: #fff;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9998;
+  width: 300px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 12px;
+}
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.panel h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.panel label {
+  display: block;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.panel input[type="checkbox"] {
+  margin-right: 6px;
+}
+
+.panel select {
+  margin-left: 6px;
+  font-size: 12px;
+}
+
+.panel hr {
+  margin: 12px 0;
+  border: none;
+  border-top: 1px solid #e0e0e0;
+}
