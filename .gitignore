@@ -8,3 +8,5 @@ dist/
 *.log
 .cache/
 tsconfig.tsbuildinfo
+playwright-report/
+test-results/
