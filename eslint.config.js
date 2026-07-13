@@ -27,6 +27,7 @@ export default [
       globals: {
         console: 'readonly',
         process: 'readonly',
+        URL: 'readonly',
         window: 'readonly',
         document: 'readonly',
         navigator: 'readonly',
