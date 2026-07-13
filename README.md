@@ -56,3 +56,22 @@ Il progetto include `eslint` e `prettier` come dipendenze di sviluppo. Puoi eseg
 npx eslint src/scripts
 npx prettier --check .
 ```
+
+## Deploy su Vercel
+
+Il progetto è un sito statico (nessun build step), configurato per il deploy zero-config tramite `vercel.json` (root del progetto come `outputDirectory`).
+
+**Opzione A — Import da GitHub (consigliata):**
+
+1. Vai su [vercel.com/new](https://vercel.com/new) e importa il repository `unio-corp/pdp-femmina-prima`.
+2. Vercel rileva automaticamente `vercel.json`: non servono altre impostazioni (Framework Preset: "Other").
+3. Conferma il deploy: ogni push sul branch collegato genera automaticamente una nuova preview/produzione.
+
+**Opzione B — Vercel CLI:**
+
+```bash
+npm i -g vercel
+vercel login
+vercel        # deploy di preview
+vercel --prod # deploy in produzione
+```
