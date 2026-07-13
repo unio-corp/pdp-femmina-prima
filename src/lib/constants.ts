@@ -30,9 +30,14 @@ export const RECENTLY_VIEWED: RecentlyViewedItem[] = [
 ];
 
 export const NAV_LINKS: NavLink[] = [
-  { label: 'Uomo', href: '/' },
+  { label: 'Novità', href: '/' },
   { label: 'Donna', href: '/' },
-  { label: 'Accessori', href: '/' },
+  { label: 'Uomo', href: '/' },
+  { label: 'Borse', href: '/' },
+  { label: 'Art of Living', href: '/' },
+  { label: 'Fragranze', href: '/' },
+  { label: 'Regali', href: '/' },
+  { label: 'Craft in Motion', href: '/' },
 ];
 
 export const BREADCRUMBS: Breadcrumb[] = [
