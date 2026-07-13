@@ -9,7 +9,7 @@ export const PRODUCT: Product = {
   tag: 'Novità',
   preorderDate: '18 settembre',
   images: [
-    { src: '/uploads/01-mode.jpg', alt: 'Giacca in mohair e lana — vista frontale', format: 'jpg' },
+    { src: '/uploads/01-model.webp', alt: 'Giacca in mohair e lana — vista frontale', format: 'webp' },
     { src: '/uploads/02-model.webp', alt: 'Giacca in mohair e lana — vista laterale', format: 'webp' },
     { src: '/uploads/03-model.webp', alt: 'Giacca in mohair e lana — vista posteriore', format: 'webp' },
     { src: '/uploads/04-model.webp', alt: 'Giacca in mohair e lana — dettaglio revers', format: 'webp' },
