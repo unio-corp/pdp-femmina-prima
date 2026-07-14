@@ -148,4 +148,26 @@ describe('ProductGalleryLightbox', () => {
 
     dialogProto.showModal = original;
   });
+
+  it('chiude con Escape correttamente anche mentre zoomata, senza doppia emissione close', async () => {
+    const { onEvent, onClose } = renderLightbox();
+    const dialog = screen.getByRole('dialog', { hidden: true });
+
+    // Zoom in via scorciatoia da tastiera ('+' → zoomSurfaceRef.current.zoomIn).
+    dialog.dispatchEvent(
+      new KeyboardEvent('keydown', { key: '+', bubbles: true, cancelable: true })
+    );
+
+    await waitFor(() => {
+      const zoomEvents = onEvent.mock.calls.map(([event]) => event).filter((e) => e.type === 'zoom');
+      expect(zoomEvents.length).toBeGreaterThan(0);
+    });
+
+    // Escape mentre lo stato è zoomato: chiusura pulita, un solo evento close.
+    dialog.dispatchEvent(new Event('cancel', { cancelable: true }));
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+    const closeEvents = onEvent.mock.calls.map(([event]) => event).filter((e) => e.type === 'close');
+    expect(closeEvents).toHaveLength(1);
+  });
 });

@@ -41,8 +41,8 @@ type ZoomSurfaceProps = Readonly<{
   src: string;
   alt: string;
   reducedMotion: boolean;
-  /** Impostata a true durante interazioni significative: inibisce il backdrop close. */
-  interactionRef: React.MutableRefObject<boolean>;
+  /** Chiamata durante interazioni significative: inibisce il backdrop close nel parent. */
+  onSignificantInteraction: () => void;
   onLoad: () => void;
   onError: () => void;
   onNavigate: (direction: 'previous' | 'next') => void;
@@ -70,11 +70,13 @@ type GestureStart = Readonly<{
 
 export const ZoomSurface = forwardRef<ZoomSurfaceHandle, ZoomSurfaceProps>(
   function ZoomSurface(
-    { src, alt, reducedMotion, interactionRef, onLoad, onError, onNavigate, onZoomCommit },
+    { src, alt, reducedMotion, onSignificantInteraction, onLoad, onError, onNavigate, onZoomCommit },
     ref
   ) {
     const stageRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
+    const onSignificantInteractionRef = useRef(onSignificantInteraction);
+    onSignificantInteractionRef.current = onSignificantInteraction;
 
     const transformRef = useRef<ZoomTransform>(IDENTITY_TRANSFORM);
     const committedScaleRef = useRef(1);
@@ -227,8 +229,8 @@ export const ZoomSurface = forwardRef<ZoomSurfaceHandle, ZoomSurfaceProps>(
       };
       didPinchRef.current = true;
       lastTapRef.current = null;
-      interactionRef.current = true;
-    }, [toStagePoint, interactionRef]);
+      onSignificantInteractionRef.current();
+    }, [toStagePoint]);
 
     const finalizePinch = useCallback(() => {
       if (!pinchRef.current) return;
@@ -250,8 +252,11 @@ export const ZoomSurface = forwardRef<ZoomSurfaceHandle, ZoomSurfaceProps>(
         });
         try {
           event.currentTarget.setPointerCapture(event.pointerId);
-        } catch {
-          // Pointer sintetici (test) possono non supportare la capture.
+        } catch (error) {
+          // Pointer sintetici (test) possono non supportare la capture:
+          // logga comunque, un fallimento reale in produzione lascerebbe
+          // altrimenti la gesture senza segnale diagnostico.
+          console.error('ZoomSurface: setPointerCapture() non riuscito.', error);
         }
 
         if (pointersRef.current.size === 2) {
@@ -300,7 +305,7 @@ export const ZoomSurface = forwardRef<ZoomSurfaceHandle, ZoomSurfaceProps>(
             unclamped,
             getPanBounds(fittedSize(), stageSizeRef.current, nextScale)
           );
-          interactionRef.current = true;
+          onSignificantInteractionRef.current();
           scheduleRender();
           return;
         }
@@ -313,7 +318,7 @@ export const ZoomSurface = forwardRef<ZoomSurfaceHandle, ZoomSurfaceProps>(
         const deltaY = event.clientY - start.y;
         if (!didDragRef.current && !isTapMovement(deltaX, deltaY)) {
           didDragRef.current = true;
-          interactionRef.current = true;
+          onSignificantInteractionRef.current();
         }
         if (!didDragRef.current) return;
 
@@ -330,7 +335,7 @@ export const ZoomSurface = forwardRef<ZoomSurfaceHandle, ZoomSurfaceProps>(
           scheduleRender();
         }
       },
-      [toStagePoint, fittedSize, scheduleRender, interactionRef]
+      [toStagePoint, fittedSize, scheduleRender]
     );
 
     const handleTapOrClick = useCallback(
