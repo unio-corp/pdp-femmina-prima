@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "lace": {
+      "type": "http",
+      "url": "https://mcp.inlace.co"
+    }
+  }
+}
