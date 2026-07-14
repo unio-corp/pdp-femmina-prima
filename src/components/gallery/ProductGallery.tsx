@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ProductGalleryEvent, ProductGalleryProps } from './types';
 import { normalizeInitialIndex, validateGalleryImages } from './lib/validate';
 import { isFullSpan } from './lib/layout';
-import { ProductImageTrigger } from './ProductImageTrigger';
+import { Slide, type SlideHandle } from './Slide';
 import { GalleryNavigation } from './GalleryNavigation';
 import { ProductGalleryLightbox } from './ProductGalleryLightbox';
 import styles from './ProductGallery.module.css';
@@ -34,7 +34,7 @@ export function ProductGallery({
   // Trigger che ha aperto la lightbox: destinatario del focus return,
   // invariante rispetto alla navigazione interna al dialog.
   const openerIndexRef = useRef<number | null>(null);
-  const triggerRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const slideRefs = useRef<(SlideHandle | null)[]>([]);
   // Marker post-idratazione: i controlli richiedono JavaScript attivo e i
   // test E2E attendono questo attributo prima di interagire.
   const [isHydrated, setIsHydrated] = useState(false);
@@ -130,25 +130,28 @@ export function ProductGallery({
     };
   }, [validImages.length, emit]);
 
-  const step = useCallback((direction: 1 | -1) => {
-    const list = listRef.current;
-    if (!list) return;
+  const step = useCallback(
+    (direction: 1 | -1) => {
+      const list = listRef.current;
+      if (!list) return;
 
-    const slides = list.querySelectorAll<HTMLElement>('li');
-    const base = pendingTargetRef.current ?? activeIndexRef.current;
-    const target = Math.min(Math.max(base + direction, 0), slides.length - 1);
-    if (target === base) return;
+      const base = pendingTargetRef.current ?? activeIndexRef.current;
+      const target = Math.min(Math.max(base + direction, 0), validImages.length - 1);
+      if (target === base) return;
 
-    pendingMethodRef.current = 'button';
-    pendingTargetRef.current = target;
-    const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
-    // Scroll solo orizzontale sul contenitore: scrollIntoView potrebbe
-    // spostare verticalmente la pagina.
-    list.scrollTo({
-      left: slides[target].offsetLeft,
-      behavior: reducedMotion ? 'auto' : 'smooth',
-    });
-  }, []);
+      pendingMethodRef.current = 'button';
+      pendingTargetRef.current = target;
+      const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
+      // Scroll solo orizzontale sul contenitore: scrollIntoView potrebbe
+      // spostare verticalmente la pagina. Lo slide dice solo "dove sono",
+      // il genitore resta responsabile dello scroll del proprio viewport.
+      list.scrollTo({
+        left: slideRefs.current[target]?.getOffsetLeft() ?? 0,
+        behavior: reducedMotion ? 'auto' : 'smooth',
+      });
+    },
+    [validImages.length]
+  );
 
   // Apertura lightbox: memorizza indice richiesto e trigger di origine.
   // L'evento `open` è emesso dalla lightbox solo dopo showModal() reale.
@@ -161,7 +164,7 @@ export function ProductGallery({
     setRequestedLightboxIndex(null);
     const opener = openerIndexRef.current;
     openerIndexRef.current = null;
-    if (opener !== null) triggerRefs.current[opener]?.focus();
+    if (opener !== null) slideRefs.current[opener]?.focus();
   }, []);
 
   // Deduplica per indice: onError di next/image e la segnalazione di
@@ -188,30 +191,21 @@ export function ProductGallery({
     >
       <ul className={styles.viewport} ref={listRef}>
         {validImages.map((image, index) => (
-          <li
+          <Slide
             // Chiave interna tollerante agli id duplicati (che la validazione
             // segnala ma non rimuove); il mediaId pubblico resta image.id.
             key={`${image.id}-${index}`}
-            data-index={index}
-            className={
-              isFullSpan(index, total)
-                ? `${styles.slide} ${styles.slideFullSpan}`
-                : styles.slide
-            }
-          >
-            <ProductImageTrigger
-              image={image}
-              index={index}
-              total={total}
-              productName={productName}
-              isFullSpan={isFullSpan(index, total)}
-              onActivate={requestLightbox}
-              onError={reportInlineError}
-              buttonRef={(element) => {
-                triggerRefs.current[index] = element;
-              }}
-            />
-          </li>
+            ref={(handle) => {
+              slideRefs.current[index] = handle;
+            }}
+            image={image}
+            index={index}
+            total={total}
+            productName={productName}
+            isFullSpan={isFullSpan(index, total)}
+            onActivate={requestLightbox}
+            onError={reportInlineError}
+          />
         ))}
       </ul>
 

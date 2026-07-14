@@ -33,6 +33,7 @@ export default [
         navigator: 'readonly',
         HTMLElement: 'readonly',
         HTMLUListElement: 'readonly',
+        HTMLLIElement: 'readonly',
         HTMLButtonElement: 'readonly',
         HTMLDialogElement: 'readonly',
         HTMLImageElement: 'readonly',
