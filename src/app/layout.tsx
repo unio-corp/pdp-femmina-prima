@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Header } from '@/components/layout/Header';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { Footer } from '@/components/layout/Footer';
 import '@/styles/globals.css';
 
@@ -61,6 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Header />
         <main>{children}</main>
+        <Breadcrumbs />
         <Footer />
       </body>
     </html>
