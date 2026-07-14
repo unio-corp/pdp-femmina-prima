@@ -188,12 +188,16 @@ export function ProductGalleryLightbox({
   const prefetchedRef = useRef(new Set<string>());
   const prefetchImagesRef = useRef<HTMLImageElement[]>([]);
 
-  // Il futuro ZoomSurface la imposta durante pan/pinch per invalidare
-  // la chiusura da backdrop.
+  // ZoomSurface la imposta (via onSignificantInteraction) durante pan/pinch
+  // per invalidare la chiusura da backdrop.
   const didPointerInteractRef = useRef(false);
   const backdropPointerRef = useRef<{ x: number; y: number; onBackdrop: boolean } | null>(
     null
   );
+
+  const handleSignificantInteraction = useCallback(() => {
+    didPointerInteractRef.current = true;
+  }, []);
 
   const closeLightbox = useCallback((reason: CloseReason) => {
     if (closeEmittedRef.current) return;
@@ -224,9 +228,14 @@ export function ProductGalleryLightbox({
       try {
         dialog.showModal();
       } catch (error) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.error('ProductGalleryLightbox: showModal() non riuscito.', error);
-        }
+        console.error('ProductGalleryLightbox: showModal() non riuscito.', error);
+        const index = lightboxIndexRef.current;
+        onEventRef.current({
+          type: 'error',
+          index,
+          mediaId: images[index]?.id ?? '',
+          source: 'lightbox',
+        });
         onCloseRef.current();
         return;
       }
@@ -360,12 +369,13 @@ export function ProductGalleryLightbox({
   // Chiusura da backdrop: pointerdown e pointerup entrambi sul dialog,
   // movimento sotto soglia, nessuna interazione interna intercorsa.
   const handlePointerDown = useCallback((event: React.PointerEvent<HTMLDialogElement>) => {
-    backdropPointerRef.current = {
-      x: event.clientX,
-      y: event.clientY,
-      onBackdrop: event.target === event.currentTarget,
-    };
-    didPointerInteractRef.current = false;
+    const onBackdrop = event.target === event.currentTarget;
+    backdropPointerRef.current = { x: event.clientX, y: event.clientY, onBackdrop };
+    // Reset solo per pointerdown che originano davvero sul backdrop: un
+    // pointerdown che risale da un elemento interno (es. il secondo dito
+    // di un pinch sulla ZoomSurface) non deve azzerare il flag e correre
+    // contro onSignificantInteraction che lo imposta a true nello stesso evento.
+    if (onBackdrop) didPointerInteractRef.current = false;
   }, []);
 
   const handlePointerUp = useCallback(
@@ -443,7 +453,7 @@ export function ProductGalleryLightbox({
             src={currentSrc}
             alt={currentImage.alt}
             reducedMotion={reducedMotion}
-            interactionRef={didPointerInteractRef}
+            onSignificantInteraction={handleSignificantInteraction}
             onLoad={() => {
               if (lightboxIndexRef.current === lightboxIndex) setLoadStatus('ready');
             }}
