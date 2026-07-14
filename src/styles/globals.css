@@ -30,12 +30,32 @@
   --space-xl: 3rem;
   --space-section: clamp(4rem, 3rem + 5vw, 10rem);
 
+  /* Product gallery */
+  --gallery-surface: var(--muted-bg);
+  --gallery-overlay: rgba(0, 0, 0, 0.92);
+  --gallery-control-bg: rgba(255, 255, 255, 0.85);
+  --gallery-control-fg: #000;
+  --gallery-control-border: transparent;
+  --gallery-focus-ring: 2px solid var(--fg);
+  --gallery-grid-gap: 0px;
+  --gallery-control-size: 44px;
+  --gallery-z-modal: 100;
+  --gallery-transition-duration: 180ms;
+  --gallery-transition-easing: cubic-bezier(0.2, 0, 0, 1);
+  --gallery-mobile-offset: 96px;
+
   /* Animation */
   --duration-fast: 150ms;
   --duration-normal: 300ms;
   --duration-slow: 500ms;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-quad: cubic-bezier(0.11, 0, 0.5, 0);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gallery-grid-gap: 0px;
+  }
 }
 
 @media (prefers-color-scheme: dark) {

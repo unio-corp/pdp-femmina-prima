@@ -1,4 +1,6 @@
-import { ProductGallery } from '@/components/sections/ProductGallery';
+import { ProductGallery } from '@/components/gallery/ProductGallery';
+import { mapProductImages } from '@/lib/gallery-adapter';
+import { PRODUCT } from '@/lib/constants';
 import { EngagementGrid } from '@/components/sections/EngagementGrid';
 import { ProductInfo } from '@/components/sections/ProductInfo';
 import { DuoCTA } from '@/components/sections/DuoCTA';
@@ -8,9 +10,7 @@ import { StickyBar } from '@/components/layout/StickyBar';
 export default function Home() {
   return (
     <>
-      <section style={{ minHeight: '100vh' }}>
-        <ProductGallery />
-      </section>
+      <ProductGallery images={mapProductImages(PRODUCT)} productName={PRODUCT.name} />
 
       <section style={{ minHeight: '100vh' }}>
         <EngagementGrid />

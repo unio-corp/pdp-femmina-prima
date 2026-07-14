@@ -1,0 +1,25 @@
+/* La superficie avvolge esattamente l'immagine contenuta: l'area vuota
+   attorno resta del dialog (backdrop click). */
+.surface {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  max-height: calc(100dvh - (var(--gallery-control-size, 44px) * 2 + 2rem));
+  touch-action: none;
+  pointer-events: auto;
+}
+
+.image {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100dvh - (var(--gallery-control-size, 44px) * 2 + 2rem));
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transform-origin: center;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
