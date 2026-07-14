@@ -19,14 +19,8 @@ import {
   type Size,
   type ZoomTransform,
 } from './lib/zoom-math';
-import {
-  getPointerDistance,
-  getPointerMidpoint,
-  getSwipeDirection,
-  isDoubleTap,
-  isTapMovement,
-  type TapRecord,
-} from './lib/gesture';
+import { getSwipeDirection } from './lib/gesture';
+import { dispatch, INITIAL_GESTURE_STATE } from './lib/gesture-state';
 import styles from './ZoomSurface.module.css';
 
 export type ZoomMethod = 'click' | 'double-tap' | 'pinch' | 'button' | 'wheel' | 'keyboard';
@@ -53,21 +47,6 @@ const WHEEL_COMMIT_DEBOUNCE_MS = 300;
 const WHEEL_SENSITIVITY = 0.002;
 const COMMIT_ANIMATION_MS = 200;
 
-type ActivePointer = { x: number; y: number; pointerType: string };
-
-type PinchState = Readonly<{
-  distance: number;
-  imagePoint: Point;
-  scale: number;
-}>;
-
-type GestureStart = Readonly<{
-  x: number;
-  y: number;
-  transform: ZoomTransform;
-  pointerType: string;
-}>;
-
 export const ZoomSurface = forwardRef<ZoomSurfaceHandle, ZoomSurfaceProps>(
   function ZoomSurface(
     { src, alt, reducedMotion, onSignificantInteraction, onLoad, onError, onNavigate, onZoomCommit },
@@ -83,12 +62,11 @@ export const ZoomSurface = forwardRef<ZoomSurfaceHandle, ZoomSurfaceProps>(
     const naturalSizeRef = useRef<Size>({ width: 0, height: 0 });
     const stageSizeRef = useRef<Size>({ width: 0, height: 0 });
 
-    const pointersRef = useRef(new Map<number, ActivePointer>());
-    const gestureStartRef = useRef<GestureStart | null>(null);
-    const pinchRef = useRef<PinchState | null>(null);
-    const didDragRef = useRef(false);
-    const didPinchRef = useRef(false);
-    const lastTapRef = useRef<TapRecord | null>(null);
+    // Unico proprietario della topologia pointer (pinch/pan/tap/swipe):
+    // vedi lib/gesture-state.ts. Sostituisce i sei ref precedenti
+    // (pointersRef, gestureStartRef, pinchRef, didDragRef, didPinchRef,
+    // lastTapRef) con un solo stato, interpretato da un reducer puro e testato.
+    const gestureStateRef = useRef(INITIAL_GESTURE_STATE);
 
     const rafRef = useRef<number | null>(null);
     const wheelTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -192,6 +170,8 @@ export const ZoomSurface = forwardRef<ZoomSurfaceHandle, ZoomSurfaceProps>(
     );
 
     // Coordinate pointer → sistema centrato sullo stage (non trasformato).
+    // Unico punto che legge il DOM per la geometria: gesture-state.ts non
+    // conosce mai lo stage, riceve solo coordinate già proiettate.
     const toStagePoint = useCallback((clientX: number, clientY: number): Point => {
       const stage = stageRef.current;
       if (!stage) return { x: 0, y: 0 };
@@ -202,39 +182,15 @@ export const ZoomSurface = forwardRef<ZoomSurfaceHandle, ZoomSurfaceProps>(
       };
     }, []);
 
-    const clearGesture = useCallback(() => {
-      gestureStartRef.current = null;
-      pinchRef.current = null;
-      didDragRef.current = false;
-      didPinchRef.current = false;
+    const resetCursorIfZoomed = useCallback(() => {
       if (imageRef.current && transformRef.current.scale > 1) {
         imageRef.current.style.cursor = 'grab';
       }
     }, []);
 
-    const startPinch = useCallback(() => {
-      const points = [...pointersRef.current.values()];
-      if (points.length < 2) return;
-      const a = toStagePoint(points[0].x, points[0].y);
-      const b = toStagePoint(points[1].x, points[1].y);
-      const midpoint = getPointerMidpoint(a, b);
-      const t = transformRef.current;
-      pinchRef.current = {
-        distance: Math.max(getPointerDistance(a, b), 1),
-        imagePoint: {
-          x: (midpoint.x - t.x) / t.scale,
-          y: (midpoint.y - t.y) / t.scale,
-        },
-        scale: t.scale,
-      };
-      didPinchRef.current = true;
-      lastTapRef.current = null;
-      onSignificantInteractionRef.current();
-    }, [toStagePoint]);
-
+    // Settle del pinch: identità sotto una soglia trascurabile, altrimenti
+    // traslazione ri-limitata alla geometria corrente dello stage.
     const finalizePinch = useCallback(() => {
-      if (!pinchRef.current) return;
-      pinchRef.current = null;
       const t = transformRef.current;
       const next =
         t.scale <= 1.001
@@ -245,11 +201,6 @@ export const ZoomSurface = forwardRef<ZoomSurfaceHandle, ZoomSurfaceProps>(
 
     const handlePointerDown = useCallback(
       (event: React.PointerEvent<HTMLDivElement>) => {
-        pointersRef.current.set(event.pointerId, {
-          x: event.clientX,
-          y: event.clientY,
-          pointerType: event.pointerType,
-        });
         try {
           event.currentTarget.setPointerCapture(event.pointerId);
         } catch (error) {
@@ -259,184 +210,116 @@ export const ZoomSurface = forwardRef<ZoomSurfaceHandle, ZoomSurfaceProps>(
           console.error('ZoomSurface: setPointerCapture() non riuscito.', error);
         }
 
-        if (pointersRef.current.size === 2) {
-          startPinch();
+        const point = toStagePoint(event.clientX, event.clientY);
+        const { state, result } = dispatch(
+          gestureStateRef.current,
+          { type: 'pointer-down', pointerId: event.pointerId, point, pointerType: event.pointerType },
+          transformRef.current
+        );
+        gestureStateRef.current = state;
+
+        if (result?.type === 'pinch-start') {
+          onSignificantInteractionRef.current();
           return;
         }
 
-        gestureStartRef.current = {
-          x: event.clientX,
-          y: event.clientY,
-          transform: transformRef.current,
-          pointerType: event.pointerType,
-        };
-        didDragRef.current = false;
         if (transformRef.current.scale > 1 && imageRef.current) {
           imageRef.current.style.cursor = 'grabbing';
         }
       },
-      [startPinch]
+      [toStagePoint]
     );
 
     const handlePointerMove = useCallback(
       (event: React.PointerEvent<HTMLDivElement>) => {
-        const pointer = pointersRef.current.get(event.pointerId);
-        if (!pointer) return;
-        pointer.x = event.clientX;
-        pointer.y = event.clientY;
+        const point = toStagePoint(event.clientX, event.clientY);
+        const { state, result } = dispatch(
+          gestureStateRef.current,
+          { type: 'pointer-move', pointerId: event.pointerId, point },
+          transformRef.current
+        );
+        gestureStateRef.current = state;
+        if (!result) return;
 
-        // Pinch: due pointer attivi.
-        if (pinchRef.current && pointersRef.current.size >= 2) {
-          const points = [...pointersRef.current.values()];
-          const a = toStagePoint(points[0].x, points[0].y);
-          const b = toStagePoint(points[1].x, points[1].y);
-          const midpoint = getPointerMidpoint(a, b);
-          const pinch = pinchRef.current;
-
-          const nextScale = clampScale(
-            pinch.scale * (getPointerDistance(a, b) / pinch.distance)
-          );
-          const unclamped: ZoomTransform = {
-            scale: nextScale,
-            x: midpoint.x - pinch.imagePoint.x * nextScale,
-            y: midpoint.y - pinch.imagePoint.y * nextScale,
-          };
-          transformRef.current = clampTranslation(
-            unclamped,
-            getPanBounds(fittedSize(), stageSizeRef.current, nextScale)
-          );
-          onSignificantInteractionRef.current();
-          scheduleRender();
-          return;
-        }
-
-        // Gesture a un pointer.
-        const start = gestureStartRef.current;
-        if (!start || pointersRef.current.size !== 1) return;
-
-        const deltaX = event.clientX - start.x;
-        const deltaY = event.clientY - start.y;
-        if (!didDragRef.current && !isTapMovement(deltaX, deltaY)) {
-          didDragRef.current = true;
-          onSignificantInteractionRef.current();
-        }
-        if (!didDragRef.current) return;
-
-        // Pan: solo oltre 1×. A 1× il movimento è un candidato swipe.
-        if (start.transform.scale > 1) {
-          transformRef.current = clampTranslation(
-            {
-              scale: start.transform.scale,
-              x: start.transform.x + deltaX,
-              y: start.transform.y + deltaY,
-            },
-            getPanBounds(fittedSize(), stageSizeRef.current, start.transform.scale)
-          );
-          scheduleRender();
+        switch (result.type) {
+          case 'pinch-move':
+          case 'pan-move': {
+            transformRef.current = clampTranslation(
+              result.transform,
+              getPanBounds(fittedSize(), stageSizeRef.current, result.transform.scale)
+            );
+            onSignificantInteractionRef.current();
+            scheduleRender();
+            break;
+          }
+          case 'drag-start': {
+            onSignificantInteractionRef.current();
+            break;
+          }
         }
       },
       [toStagePoint, fittedSize, scheduleRender]
     );
 
-    const handleTapOrClick = useCallback(
-      (event: React.PointerEvent<HTMLDivElement>) => {
-        const point = toStagePoint(event.clientX, event.clientY);
-
-        if (event.pointerType === 'mouse') {
-          // Click desktop: 1× → 2× sul punto; oltre 1× → reset.
-          if (transformRef.current.scale === 1) {
-            zoomTo(2, point, 'click', true);
-          } else {
-            zoomTo(1, { x: 0, y: 0 }, 'click', true);
-          }
-          return;
-        }
-
-        // Touch/penna: solo il double tap modifica lo zoom.
-        const tap: TapRecord = { time: event.timeStamp, x: event.clientX, y: event.clientY };
-        if (isDoubleTap(lastTapRef.current, tap)) {
-          lastTapRef.current = null;
-          if (transformRef.current.scale === 1) {
-            zoomTo(2, point, 'double-tap', true);
-          } else {
-            zoomTo(1, { x: 0, y: 0 }, 'double-tap', true);
-          }
-        } else {
-          lastTapRef.current = tap;
-        }
-      },
-      [toStagePoint, zoomTo]
-    );
-
     const handlePointerUp = useCallback(
       (event: React.PointerEvent<HTMLDivElement>) => {
-        if (!pointersRef.current.has(event.pointerId)) return;
-        pointersRef.current.delete(event.pointerId);
+        const point = toStagePoint(event.clientX, event.clientY);
+        const { state, result } = dispatch(
+          gestureStateRef.current,
+          { type: 'pointer-up', pointerId: event.pointerId, point, timestamp: event.timeStamp },
+          transformRef.current
+        );
+        gestureStateRef.current = state;
+
         try {
           event.currentTarget.releasePointerCapture(event.pointerId);
         } catch {
           // Capture assente: nessuna azione.
         }
 
-        // Fine pinch: da due pointer a uno. Il pointer residuo può proseguire in pan.
-        if (pinchRef.current) {
-          finalizePinch();
-          const remaining = [...pointersRef.current.entries()][0];
-          if (remaining) {
-            gestureStartRef.current = {
-              x: remaining[1].x,
-              y: remaining[1].y,
-              transform: transformRef.current,
-              pointerType: remaining[1].pointerType,
-            };
-            didDragRef.current = false;
-          }
-          return;
-        }
-
-        if (pointersRef.current.size > 0) return;
-
-        const start = gestureStartRef.current;
-        if (start && !didPinchRef.current) {
-          if (didDragRef.current) {
-            if (start.transform.scale > 1) {
+        if (result) {
+          switch (result.type) {
+            case 'pinch-end':
+              finalizePinch();
+              break;
+            case 'pan-end':
               // Fine pan: commit senza evento zoom (la scala non cambia).
               commitTransform(transformRef.current, null, false);
-            } else if (start.pointerType !== 'mouse') {
-              // Swipe: solo a 1× e solo touch/penna.
-              const direction = getSwipeDirection(
-                event.clientX - start.x,
-                event.clientY - start.y,
-                stageSizeRef.current.width
-              );
+              break;
+            case 'drag-end': {
+              const direction = getSwipeDirection(result.dx, result.dy, stageSizeRef.current.width);
               if (direction) onNavigateRef.current(direction);
+              break;
             }
-            lastTapRef.current = null;
-          } else {
-            handleTapOrClick(event);
+            case 'zoom-to':
+              zoomTo(result.targetScale, result.focalPoint, result.method, true);
+              break;
           }
         }
 
-        clearGesture();
+        if (state.pointers.size === 0) resetCursorIfZoomed();
       },
-      [finalizePinch, commitTransform, handleTapOrClick, clearGesture]
+      [toStagePoint, finalizePinch, commitTransform, zoomTo, resetCursorIfZoomed]
     );
 
     const handlePointerCancel = useCallback(
       (event: React.PointerEvent<HTMLDivElement>) => {
         // lostpointercapture segue anche il release regolare del pointerup:
-        // agisci solo se il pointer era ancora tracciato.
-        if (!pointersRef.current.has(event.pointerId)) return;
-        pointersRef.current.delete(event.pointerId);
-        if (pointersRef.current.size === 0) {
-          // Annulla la gesture: torna all'ultima trasformazione stabile.
-          if (pinchRef.current) finalizePinch();
-          lastTapRef.current = null;
-          clearGesture();
+        // agisce solo se il pointer era ancora tracciato (gestito dal reducer).
+        const { state, result } = dispatch(
+          gestureStateRef.current,
+          { type: 'pointer-cancel', pointerId: event.pointerId },
+          transformRef.current
+        );
+        gestureStateRef.current = state;
+
+        if (result?.type === 'pinch-end') finalizePinch();
+        if (state.pointers.size === 0) {
+          resetCursorIfZoomed();
           renderTransform();
         }
       },
-      [finalizePinch, clearGesture, renderTransform]
+      [finalizePinch, resetCursorIfZoomed, renderTransform]
     );
 
     // Wheel zoom solo con Ctrl/Meta; listener non-passive per preventDefault.
@@ -511,14 +394,12 @@ export const ZoomSurface = forwardRef<ZoomSurfaceHandle, ZoomSurfaceProps>(
       // Solo al mount.
     }, []);
 
-    // Cleanup completo: rAF, timer, pointer.
+    // Cleanup completo: rAF, timer.
     useEffect(() => {
-      const pointers = pointersRef.current;
       return () => {
         if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
         if (wheelTimerRef.current) clearTimeout(wheelTimerRef.current);
         if (animationTimerRef.current) clearTimeout(animationTimerRef.current);
-        pointers.clear();
       };
     }, []);
 
