@@ -13,6 +13,9 @@ export interface ProductImage {
   src: string;
   alt: string;
   format: 'jpg' | 'webp';
+  /** Dimensioni reali del file. Se assenti, l'adapter assume il packshot 4000x4000. */
+  width?: number;
+  height?: number;
 }
 
 export interface EngagementImage {

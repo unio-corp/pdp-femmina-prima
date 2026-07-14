@@ -4,7 +4,7 @@ test.describe('Product Detail Page', () => {
   test('loads product page with all sections', async ({ page }) => {
     await page.goto('/');
 
-    const gallery = page.locator('ul[class*="gallery"]');
+    const gallery = page.getByRole('region', { name: /Immagini di/ });
     await expect(gallery).toBeVisible();
 
     const productInfo = page.locator('h1');
@@ -37,7 +37,7 @@ test.describe('Product Detail Page', () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
 
-    const gallery = page.locator('ul[class*="gallery"] li');
+    const gallery = page.getByRole('region', { name: /Immagini di/ }).getByRole('listitem');
     const firstItem = gallery.first();
 
     const width = await firstItem.evaluate((el) => window.getComputedStyle(el).width);
