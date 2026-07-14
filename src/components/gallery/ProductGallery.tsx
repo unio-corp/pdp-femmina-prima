@@ -58,12 +58,10 @@ export function ProductGallery({
   }, []);
 
   useEffect(() => {
-    if (issues.length === 0) return;
-    if (process.env.NODE_ENV !== 'production') {
-      for (const issue of issues) console.error(issue.message);
-    } else if (issues.some((issue) => issue.code === 'too-many')) {
-      console.error('ProductGallery: raccolta oltre il limite, troncata a 20 immagini.');
-    }
+    // Ogni issue va loggata anche in produzione: sono la sola diagnostica
+    // disponibile per dati prodotto malformati (id duplicati, dimensioni
+    // invalide, troncamento oltre il limite).
+    for (const issue of issues) console.error(issue.message);
   }, [issues]);
 
   // Observer del carousel attivo solo sotto il breakpoint mobile.

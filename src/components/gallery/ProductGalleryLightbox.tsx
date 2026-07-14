@@ -224,9 +224,14 @@ export function ProductGalleryLightbox({
       try {
         dialog.showModal();
       } catch (error) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.error('ProductGalleryLightbox: showModal() non riuscito.', error);
-        }
+        console.error('ProductGalleryLightbox: showModal() non riuscito.', error);
+        const index = lightboxIndexRef.current;
+        onEventRef.current({
+          type: 'error',
+          index,
+          mediaId: images[index]?.id ?? '',
+          source: 'lightbox',
+        });
         onCloseRef.current();
         return;
       }
