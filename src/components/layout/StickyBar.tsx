@@ -1,14 +1,19 @@
-import { PRODUCT, STICKY_BAR_CTA } from '@/lib/constants';
+import type { Product } from '@/types';
 import styles from './StickyBar.module.css';
 
-export function StickyBar() {
+type StickyBarProps = Readonly<{
+  product: Pick<Product, 'name' | 'price'>;
+  ctaLabel: string;
+}>;
+
+export function StickyBar({ product, ctaLabel }: StickyBarProps) {
   return (
     <div className={styles.stickyBar}>
-      <span className={styles.sbName}>{PRODUCT.name}</span>
+      <span className={styles.sbName}>{product.name}</span>
       <span className={styles.sbPrice}>
-        {PRODUCT.price} €
+        {product.price} €
       </span>
-      <button className={styles.sbCta}>{STICKY_BAR_CTA}</button>
+      <button className={styles.sbCta}>{ctaLabel}</button>
     </div>
   );
 }

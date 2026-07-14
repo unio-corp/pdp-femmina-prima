@@ -39,3 +39,15 @@ export interface Breadcrumb {
   label: string;
   href?: string;
 }
+
+export interface DuoCtaCard {
+  label: string;
+  bgColor: string;
+  textColor: string;
+  price?: string;
+}
+
+export interface DuoCtaContent {
+  left: DuoCtaCard;
+  right: DuoCtaCard;
+}

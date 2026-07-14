@@ -1,4 +1,11 @@
-import type { Product, EngagementImage, RecentlyViewedItem, NavLink, Breadcrumb } from '@/types';
+import type {
+  Product,
+  EngagementImage,
+  RecentlyViewedItem,
+  NavLink,
+  Breadcrumb,
+  DuoCtaContent,
+} from '@/types';
 
 export const PRODUCT: Product = {
   id: 'jacket-001',
@@ -46,7 +53,7 @@ export const BREADCRUMBS: Breadcrumb[] = [
   { label: 'Abbigliamento' },
 ];
 
-export const DUO_CTA = {
+export const DUO_CTA: DuoCtaContent = {
   left: { label: 'Completa il look', bgColor: '#fff', textColor: '#000' },
   right: { label: 'Aggiungi al Carrello', price: '3.600€', bgColor: '#000', textColor: '#fff' },
 };

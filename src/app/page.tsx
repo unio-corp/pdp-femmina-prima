@@ -1,6 +1,6 @@
 import { ProductGallery } from '@/components/gallery/ProductGallery';
 import { mapProductImages } from '@/lib/gallery-adapter';
-import { PRODUCT } from '@/lib/constants';
+import { PRODUCT, ENGAGEMENT_IMAGES, DUO_CTA, RECENTLY_VIEWED, STICKY_BAR_CTA } from '@/lib/constants';
 import { EngagementGrid } from '@/components/sections/EngagementGrid';
 import { ProductInfo } from '@/components/sections/ProductInfo';
 import { DuoCTA } from '@/components/sections/DuoCTA';
@@ -13,20 +13,20 @@ export default function Home() {
       <ProductGallery images={mapProductImages(PRODUCT)} productName={PRODUCT.name} />
 
       <section style={{ minHeight: '100vh' }}>
-        <EngagementGrid />
+        <EngagementGrid images={ENGAGEMENT_IMAGES} />
       </section>
 
       <section style={{ minHeight: '100vh' }}>
-        <ProductInfo />
+        <ProductInfo product={PRODUCT} />
       </section>
 
-      <DuoCTA />
+      <DuoCTA content={DUO_CTA} />
 
       <section style={{ minHeight: '100vh', paddingTop: 'var(--sticky-bar-h)' }}>
-        <RecentlyViewed />
+        <RecentlyViewed items={RECENTLY_VIEWED} />
       </section>
 
-      <StickyBar />
+      <StickyBar product={PRODUCT} ctaLabel={STICKY_BAR_CTA} />
     </>
   );
 }

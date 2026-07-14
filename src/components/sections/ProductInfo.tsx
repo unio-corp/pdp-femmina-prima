@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { PRODUCT } from '@/lib/constants';
+import type { Product } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Accordion } from '@/components/ui/Accordion';
 import styles from './ProductInfo.module.css';
@@ -13,16 +13,20 @@ const ACCORDION_ITEMS = [
   { title: 'Scopri in negozio', content: 'Disponibile nei nostri negozi in Italia e Europa.' },
 ];
 
-export function ProductInfo() {
+type ProductInfoProps = Readonly<{
+  product: Product;
+}>;
+
+export function ProductInfo({ product }: ProductInfoProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   return (
     <section className={styles.section}>
       <div className={styles.container}>
-        <span className={styles.tag}>{PRODUCT.tag}</span>
-        <h1 className={styles.name}>{PRODUCT.name}</h1>
-        <p className={styles.price}>{PRODUCT.price} €</p>
-        <p className={styles.color}>Colore: {PRODUCT.color}</p>
+        <span className={styles.tag}>{product.tag}</span>
+        <h1 className={styles.name}>{product.name}</h1>
+        <p className={styles.price}>{product.price} €</p>
+        <p className={styles.color}>Colore: {product.color}</p>
 
         <button className={styles.sizeBtn} onClick={() => setSelectedSize(selectedSize ? null : 'XS')}>
           <span>Seleziona la taglia {selectedSize ? `- ${selectedSize}` : ''}</span>
@@ -45,9 +49,9 @@ export function ProductInfo() {
         <Button variant="primary">Pre-ordina</Button>
         <Button variant="secondary">Scopri il look</Button>
 
-        <p className={styles.shippingNote}>Data di spedizione stimata a partire dal {PRODUCT.preorderDate}</p>
+        <p className={styles.shippingNote}>Data di spedizione stimata a partire dal {product.preorderDate}</p>
 
-        <p className={styles.description}>{PRODUCT.description}</p>
+        <p className={styles.description}>{product.description}</p>
 
         <Accordion items={ACCORDION_ITEMS} />
       </div>
