@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ProductGalleryEvent, ProductGalleryProps } from './types';
 import { normalizeInitialIndex, validateGalleryImages } from './lib/validate';
 import { isFullSpan } from './lib/layout';
+import { formatCounter } from './lib/counter';
 import { Slide, type SlideHandle } from './Slide';
 import { GalleryNavigation } from './GalleryNavigation';
 import { ProductGalleryLightbox } from './ProductGalleryLightbox';
@@ -210,7 +211,15 @@ export function ProductGallery({
       </ul>
 
       {total > 1 && (
-        <GalleryNavigation activeIndex={activeIndex} total={total} onStep={step} />
+        <GalleryNavigation
+          className={styles.navigation}
+          canGoPrev={activeIndex > 0}
+          canGoNext={activeIndex < total - 1}
+          onPrev={() => step(-1)}
+          onNext={() => step(1)}
+          counterText={formatCounter(activeIndex, total)}
+          liveText={`Immagine ${activeIndex + 1} di ${total}`}
+        />
       )}
 
       {requestedLightboxIndex !== null && (

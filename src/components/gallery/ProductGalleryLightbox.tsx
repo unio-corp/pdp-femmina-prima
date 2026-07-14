@@ -13,6 +13,7 @@ import { formatCounter } from './lib/counter';
 import { getZoomControlsState } from './lib/gesture';
 import { MAX_SCALE, MIN_SCALE } from './lib/zoom-math';
 import { ZoomSurface, type ZoomMethod, type ZoomSurfaceHandle } from './ZoomSurface';
+import { GalleryNavigation } from './GalleryNavigation';
 import styles from './ProductGalleryLightbox.module.css';
 
 type CloseReason = 'button' | 'escape' | 'backdrop' | 'native';
@@ -60,34 +61,6 @@ function unlockBodyScroll(saved: BodyScrollLock): void {
   // La posizione non viene alterata dal lock; ripristino difensivo.
   if (window.scrollY !== saved.scrollY) window.scrollTo(0, saved.scrollY);
 }
-
-const PrevIcon = () => (
-  <svg
-    width="22"
-    height="22"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    aria-hidden="true"
-  >
-    <polyline points="14,5 7,12 14,19" />
-  </svg>
-);
-
-const NextIcon = () => (
-  <svg
-    width="22"
-    height="22"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    aria-hidden="true"
-  >
-    <polyline points="10,5 17,12 10,19" />
-  </svg>
-);
 
 const ZoomInIcon = () => (
   <svg
@@ -515,36 +488,20 @@ export function ProductGalleryLightbox({
         </button>
       </div>
 
-      <div className={styles.controls}>
-        <button
-          type="button"
-          className={styles.navButton}
-          onClick={() => navigate(stepLightboxIndex(lightboxIndex, -1, total), 'button')}
-          disabled={!canNavigate(lightboxIndex, -1, total)}
-          aria-label="Immagine precedente"
-        >
-          <PrevIcon />
-        </button>
-
-        <span className={styles.counter} aria-hidden="true">
-          {formatCounter(lightboxIndex, total)}
-        </span>
-        <span className={styles.visuallyHidden} aria-live="polite">
-          {loadStatus === 'loading'
+      <GalleryNavigation
+        className={styles.controls}
+        onDarkBackground
+        canGoPrev={canNavigate(lightboxIndex, -1, total)}
+        canGoNext={canNavigate(lightboxIndex, 1, total)}
+        onPrev={() => navigate(stepLightboxIndex(lightboxIndex, -1, total), 'button')}
+        onNext={() => navigate(stepLightboxIndex(lightboxIndex, 1, total), 'button')}
+        counterText={formatCounter(lightboxIndex, total)}
+        liveText={
+          loadStatus === 'loading'
             ? `Caricamento immagine ${lightboxIndex + 1} di ${total}`
-            : `Immagine ${lightboxIndex + 1} di ${total}`}
-        </span>
-
-        <button
-          type="button"
-          className={styles.navButton}
-          onClick={() => navigate(stepLightboxIndex(lightboxIndex, 1, total), 'button')}
-          disabled={!canNavigate(lightboxIndex, 1, total)}
-          aria-label="Immagine successiva"
-        >
-          <NextIcon />
-        </button>
-      </div>
+            : `Immagine ${lightboxIndex + 1} di ${total}`
+        }
+      />
     </dialog>
   );
 }

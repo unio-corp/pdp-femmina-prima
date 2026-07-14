@@ -1,12 +1,25 @@
 'use client';
 
-import { formatCounter } from './lib/counter';
-import styles from './ProductGallery.module.css';
+import styles from './GalleryNavigation.module.css';
 
+/**
+ * Puramente presentazionale: nessuna nozione di carousel/lightbox, stato di
+ * caricamento o calcolo di limiti. Ogni chiamante calcola i propri booleani/
+ * handler/testo (con formatCounter/canNavigate) — condiviso solo il markup
+ * icone+bottoni+contatore, prima duplicato tra GalleryNavigation e i
+ * controlli inline della lightbox.
+ */
 type GalleryNavigationProps = Readonly<{
-  activeIndex: number;
-  total: number;
-  onStep: (direction: 1 | -1) => void;
+  canGoPrev: boolean;
+  canGoNext: boolean;
+  onPrev: () => void;
+  onNext: () => void;
+  counterText: string;
+  liveText: string;
+  /** Classe di posizionamento del wrapper, dal modulo CSS del chiamante. */
+  className: string;
+  /** Bordo/focus-ring per sfondi scuri (lightbox). Default: contesto chiaro. */
+  onDarkBackground?: boolean;
 }>;
 
 const PrevIcon = () => (
@@ -37,31 +50,44 @@ const NextIcon = () => (
   </svg>
 );
 
-export function GalleryNavigation({ activeIndex, total, onStep }: GalleryNavigationProps) {
+export function GalleryNavigation({
+  canGoPrev,
+  canGoNext,
+  onPrev,
+  onNext,
+  counterText,
+  liveText,
+  className,
+  onDarkBackground = false,
+}: GalleryNavigationProps) {
+  const navButtonClassName = onDarkBackground
+    ? `${styles.navButton} ${styles.navButtonOnDark}`
+    : styles.navButton;
+
   return (
-    <div className={styles.navigation}>
+    <div className={className}>
       <button
         type="button"
-        className={styles.navButton}
-        onClick={() => onStep(-1)}
-        disabled={activeIndex <= 0}
+        className={navButtonClassName}
+        onClick={onPrev}
+        disabled={!canGoPrev}
         aria-label="Immagine precedente"
       >
         <PrevIcon />
       </button>
 
       <span className={styles.counter} aria-hidden="true">
-        {formatCounter(activeIndex, total)}
+        {counterText}
       </span>
       <span className={styles.visuallyHidden} aria-live="polite">
-        Immagine {activeIndex + 1} di {total}
+        {liveText}
       </span>
 
       <button
         type="button"
-        className={styles.navButton}
-        onClick={() => onStep(1)}
-        disabled={activeIndex >= total - 1}
+        className={navButtonClassName}
+        onClick={onNext}
+        disabled={!canGoNext}
         aria-label="Immagine successiva"
       >
         <NextIcon />
