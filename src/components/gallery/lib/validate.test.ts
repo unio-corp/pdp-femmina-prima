@@ -11,6 +11,7 @@ function makeImage(overrides: Partial<ProductGalleryImage> = {}): ProductGallery
   return {
     id: 'img-1',
     src: '/uploads/01.webp',
+    zoomSrc: '/uploads/01.webp',
     alt: 'Vista frontale',
     width: 4000,
     height: 4000,

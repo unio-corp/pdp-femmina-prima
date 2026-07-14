@@ -13,7 +13,7 @@ function makeImage(id: string, zoomSrc?: string): ProductGalleryImage {
   return {
     id,
     src: `/uploads/${id}.webp`,
-    zoomSrc,
+    zoomSrc: zoomSrc ?? `/uploads/${id}.webp`,
     alt: id,
     width: 4000,
     height: 4000,
@@ -99,11 +99,11 @@ describe('getAdjacentIndexes', () => {
 });
 
 describe('lightboxSrc', () => {
-  test('prefers zoomSrc when present', () => {
+  test('restituisce zoomSrc quando è una variante HD dedicata', () => {
     expect(lightboxSrc(makeImage('a', '/uploads/a-zoom.jpg'))).toBe('/uploads/a-zoom.jpg');
   });
 
-  test('falls back to src without zoomSrc', () => {
+  test('restituisce zoomSrc anche quando ripete src (nessuna variante HD)', () => {
     expect(lightboxSrc(makeImage('b'))).toBe('/uploads/b.webp');
   });
 });

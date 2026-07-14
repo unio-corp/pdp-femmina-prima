@@ -7,6 +7,7 @@ import type { ProductGalleryImage } from './types';
 const IMAGE: ProductGalleryImage = {
   id: 'img-1',
   src: '/uploads/01.webp',
+  zoomSrc: '/uploads/01.webp',
   alt: 'Prima immagine',
   width: 800,
   height: 1000,

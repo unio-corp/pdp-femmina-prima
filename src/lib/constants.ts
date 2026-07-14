@@ -16,10 +16,40 @@ export const PRODUCT: Product = {
   tag: 'Novità',
   preorderDate: '18 settembre',
   images: [
-    { src: '/uploads/01-model.webp', alt: 'Giacca in mohair e lana — vista frontale', format: 'webp' },
-    { src: '/uploads/02-model.webp', alt: 'Giacca in mohair e lana — vista laterale', format: 'webp' },
-    { src: '/uploads/03-model.webp', alt: 'Giacca in mohair e lana — vista posteriore', format: 'webp' },
-    { src: '/uploads/04-model.webp', alt: 'Giacca in mohair e lana — dettaglio revers', format: 'webp' },
+    {
+      id: 'jacket-001-media-1',
+      src: '/uploads/01-model.webp',
+      zoomSrc: '/uploads/01-zoom.jpg',
+      alt: 'Giacca in mohair e lana — vista frontale',
+      width: 4000,
+      height: 4000,
+    },
+    {
+      id: 'jacket-001-media-2',
+      src: '/uploads/02-model.webp',
+      zoomSrc: '/uploads/02-zoom.jpg',
+      alt: 'Giacca in mohair e lana — vista laterale',
+      width: 4000,
+      height: 4000,
+    },
+    {
+      id: 'jacket-001-media-3',
+      src: '/uploads/03-model.webp',
+      zoomSrc: '/uploads/03-zoom.jpg',
+      alt: 'Giacca in mohair e lana — vista posteriore',
+      width: 4000,
+      height: 4000,
+    },
+    {
+      id: 'jacket-001-media-4',
+      src: '/uploads/04-model.webp',
+      // Nessuna variante HD dedicata: ripete src, esplicito invece di un
+      // gap silenzioso in una tabella di lookup separata.
+      zoomSrc: '/uploads/04-model.webp',
+      alt: 'Giacca in mohair e lana — dettaglio revers',
+      width: 4000,
+      height: 4000,
+    },
   ],
 };
 

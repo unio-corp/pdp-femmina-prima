@@ -26,9 +26,9 @@ export function canNavigate(index: number, direction: 1 | -1, total: number): bo
   return stepLightboxIndex(index, direction, total) !== index;
 }
 
-/** Asset ad alta risoluzione quando presente, altrimenti l'inline src. */
+/** Asset ad alta risoluzione: zoomSrc è obbligatorio (ripete src se non esiste una variante HD). */
 export function lightboxSrc(image: ProductGalleryImage): string {
-  return image.zoomSrc ?? image.src;
+  return image.zoomSrc;
 }
 
 export function mediaIdAt(images: readonly ProductGalleryImage[], index: number): string {

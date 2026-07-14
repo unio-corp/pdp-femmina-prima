@@ -1,5 +1,4 @@
 import { ProductGallery } from '@/components/gallery/ProductGallery';
-import { mapProductImages } from '@/lib/gallery-adapter';
 import { PRODUCT, ENGAGEMENT_IMAGES, DUO_CTA, RECENTLY_VIEWED, STICKY_BAR_CTA } from '@/lib/constants';
 import { EngagementGrid } from '@/components/sections/EngagementGrid';
 import { ProductInfo } from '@/components/sections/ProductInfo';
@@ -10,7 +9,7 @@ import { StickyBar } from '@/components/layout/StickyBar';
 export default function Home() {
   return (
     <>
-      <ProductGallery images={mapProductImages(PRODUCT)} productName={PRODUCT.name} />
+      <ProductGallery images={PRODUCT.images} productName={PRODUCT.name} />
 
       <section style={{ minHeight: '100vh' }}>
         <EngagementGrid images={ENGAGEMENT_IMAGES} />

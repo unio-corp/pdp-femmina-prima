@@ -5,9 +5,9 @@ import { ProductGalleryLightbox } from './ProductGalleryLightbox';
 import type { ProductGalleryImage } from './types';
 
 const IMAGES: readonly ProductGalleryImage[] = [
-  { id: 'img-1', src: '/uploads/01.webp', alt: 'Prima immagine', width: 800, height: 1000 },
-  { id: 'img-2', src: '/uploads/02.webp', alt: 'Seconda immagine', width: 800, height: 1000 },
-  { id: 'img-3', src: '/uploads/03.webp', alt: 'Terza immagine', width: 800, height: 1000 },
+  { id: 'img-1', src: '/uploads/01.webp', zoomSrc: '/uploads/01.webp', alt: 'Prima immagine', width: 800, height: 1000 },
+  { id: 'img-2', src: '/uploads/02.webp', zoomSrc: '/uploads/02.webp', alt: 'Seconda immagine', width: 800, height: 1000 },
+  { id: 'img-3', src: '/uploads/03.webp', zoomSrc: '/uploads/03.webp', alt: 'Terza immagine', width: 800, height: 1000 },
 ];
 
 function renderLightbox(overrides?: Partial<{ initialIndex: number }>) {

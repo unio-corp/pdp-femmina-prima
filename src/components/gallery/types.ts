@@ -1,7 +1,8 @@
 export type ProductGalleryImage = Readonly<{
   id: string;
   src: string;
-  zoomSrc?: string;
+  /** Obbligatorio: se non esiste una variante HD dedicata, ripetere src. */
+  zoomSrc: string;
   alt: string;
   width: number;
   height: number;
